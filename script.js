@@ -33,7 +33,7 @@
             canvas.addEventListener('mousemove', function (evt){
                 var mousePos = calcMousePosition(evt);
                 //what to controll
-                paddle1Y = mousePos.y + (PADDLE_HEIGHT/2);})
+                paddle1Y = mousePos.y - (PADDLE_HEIGHT/2);})
 
             canvas.addEventListener("mousedown", handleMouseClick);
 
