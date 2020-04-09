@@ -4,7 +4,10 @@
         var ballX = 50;
         var ballSpeedX = 4;
         var ballY = 50;
-        var ballSpeedY = 2;
+        var ballSpeedY = 1;
+
+        var mainMenu = true;
+        var coop = false;
 
         var paddle1Y = 250;
         var paddle2Y = 250;
@@ -37,6 +40,53 @@
 
             canvas.addEventListener("mousedown", handleMouseClick);
 
+            //KEYBOARD LISTENER FOR COOP MODE
+            window.addEventListener("keydown", function (e) {
+
+                if(mainMenu){
+                    if (e.keyCode == 67) {
+                        mainMenu = false;
+                        coop =true;
+                    }
+                    else if (e.keyCode == 83) {
+                        mainMenu = false;
+                        coop =false;
+                    }
+                }
+                if (coop == true) {
+                    if (e.keyCode == "38") {
+                        console.log("Up.")
+                        if (paddle2Y > 0)
+                        paddle2Y -= 10;
+                    } else if (e.keyCode == "40") {
+                        console.log("Down.")
+                        if (paddle2Y + PADDLE_HEIGHT < canvas.height )
+                        paddle2Y += 10;}
+                    }
+
+                //Enter to continue
+                if (e.keyCode == 32) {
+               if (over1 || over2) {
+                   reset();
+                   over1 = false;
+                   over2 = false;
+               }
+               else if(winScreen){
+                   p1Score = 0;
+                   p2Score = 0;
+                   winScreen =false;
+               }
+           }
+
+                //Backspace to go to main Menu
+                else if (e.keyCode == 8) {
+                if (winScreen) {
+                mainMenu = true;}
+           }
+
+            }, false)
+
+
         }
 
         function handleMouseClick(evt){
@@ -56,7 +106,7 @@
             var rect = canvas.getBoundingClientRect();
             var root = document.documentElement;
             var mouseX = evt.clientX - rect.left - root.scrollLeft;
-            var mouseY = evt.clientY - rect.top - root.scrollTop;
+            var mouseY = evt.clientY - rect.top  //- root.scrollTop;
             return{
                 x:mouseX,
                 y:mouseY
@@ -68,7 +118,13 @@
             colorRect(0, 0, canvas.width, canvas.height, "black");
             canvasContext.fillStyle = 'red';
             canvasContext.textAlign = "center";
-            canvasContext.fillText("Nosni Game Studios ©", 100, canvas.height-20);
+            canvasContext.font = "15px Courier New"
+            canvasContext.fillText("Nosni Game Studios ©", 125, canvas.height-20);
+
+            if (mainMenu){
+                drawMainMenu();
+                return;
+            }
 
             if (winScreen){
                 canvasContext.fillStyle = 'white';
@@ -116,7 +172,32 @@
             canvasContext.fillText(p1Score, 100, 100);
             canvasContext.fillText(p2Score, canvas.width-100, 100);
 
+        }
 
+        function drawMainMenu() {
+            canvasContext.fillStyle = 'white';
+            canvasContext.textAlign = "center";
+            canvasContext.font = "50px Courier New";
+            canvasContext.fillText("P l a y  P o n g", canvas.width/2, canvas.height/3-40);
+
+            canvasContext.font = "25px Courier New";
+            canvasContext.fillText("brought to you with Love <3", canvas.width/2, canvas.height/3);
+
+            canvasContext.font = "20px Courier New";
+            canvasContext.fillText("I want to play with my friend!", canvas.width/2, canvas.height/3 + 80);
+            canvasContext.fillText("Press \"c\" to enter Co-op Mode.", canvas.width/2, canvas.height/3+ 110);
+
+            canvasContext.fillStyle = 'red';
+            canvasContext.font = "15px Courier New";
+            canvasContext.fillText("ATTENTION: You need at least 1 Friend(s) to enter Co-op Mode!", canvas.width/2, canvas.height/3+ 135);
+
+            canvasContext.fillStyle = 'white';
+            canvasContext.font = "20px Courier New";
+            canvasContext.fillText("NEW FEATURE: Targeted for people with 0 Friend(s).", canvas.width/2, canvas.height/3 + 200);
+            canvasContext.fillText("Enjoy this classic retro Game alone. Press \"s\" to start.", canvas.width/2, canvas.height/3 + 230);
+            canvasContext.font = "15px Courier New";
+            canvasContext.fillStyle = 'gray';
+            canvasContext.fillText("Do not worry! Someday you are going to find 1 Friend(s).", canvas.width/2, canvas.height/3+ 255);
         }
 
         function drawNet(){
@@ -127,11 +208,13 @@
 
         function moveEverything() {
 
+            if (mainMenu) return;
+
             if (winScreen || over1 || over2 ){
                 return;
             }
 
-            computerMovement();
+            if (!coop) computerMovement();
 
             //X Movement
             ballX += ballSpeedX;
@@ -140,7 +223,7 @@
                     ballSpeedX = -ballSpeedX;
                     //how far from the center does the ball hit the paddle
                     var deltaY = ballY - (paddle1Y+PADDLE_HEIGHT/2);
-                    ballSpeedY = deltaY * 0.2;
+                    ballSpeedY = deltaY * 0.1;
                 }
                 if (ballX < -100) {
                     p2Score ++;
@@ -153,7 +236,7 @@
                     ballSpeedX = -ballSpeedX;
                     //how far from the center does the ball hit the paddle
                     var deltaY = ballY - (paddle2Y+PADDLE_HEIGHT/2);
-                    ballSpeedY = deltaY * 0.2;
+                    ballSpeedY = deltaY * 0.1;
                 }
                 if (ballX > canvas.width+100){
                     p1Score ++ ;
